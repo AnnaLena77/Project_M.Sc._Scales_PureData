@@ -1,4 +1,4 @@
-#N canvas 79 109 450 300 12;
+#N canvas 45 106 450 300 12;
 #X declare -path mrpeach;
 #X msg 60 79 connect localhost 9001;
 #X msg 158 107 disconnect;

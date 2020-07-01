@@ -4,59 +4,36 @@ import netP5.*;
 OscP5 oscP5;
 NetAddress myRemoteLocation;
 
-//int durchmesserBreite = 5;
-//int durchmesserHoehe = 5;
-float positionX = 50;
-float positionY = 250;
+float positionX = 20;
+float positionY = 360;
 
-float rectW = 20;
-float rectH = 25;
-
-//Variablen von C-Ton
-float xPositionC = 200;
-float yPositionC = 400;
-float left = xPositionC - (rectW/2);
-float right = xPositionC + (rectW/2) ;
-float top = yPositionC - (rectH/2);
-float bottom = yPositionC + (rectH/2);
+Scale cDur;
+Ball ball;
 
 void setup(){
-  size(1000,500);
+  size(1080,720);
   oscP5 = new OscP5(this, 9001);
   myRemoteLocation = new NetAddress("192.168.178.36", 9002);
+  cDur = new Scale('C', 20, 20);
+  ball = new Ball(this.positionX, this.positionY);
   //OscMessage myMessage = new OscMessage("/test");
   //myMessage.add("");
   //oscP5.send(myMessage, myRemoteLocation);
 }
 
 void oscEvent(OscMessage osgMsg){
-  println(osgMsg.get(0).floatValue());
+  //println(osgMsg.get(0).floatValue());
   float value = osgMsg.get(0).floatValue();
-  positionY = ((500.0/12 * (value-72))*-1);
-  //durchmesserBreite = osgMsg.get(0).intValue();
-  //durchmesserHoehe = osgMsg.get(0).intValue();
+  float singingfield = 720.0/3.0 + 720.0/3.0;
+  positionY = ((singingfield/12 * (value-72))*-1)+(20*(value-60));
 }
 
 void draw(){
   background(0);
-  //ellipse(250, 250, durchmesserBreite, durchmesserHoehe);
   fill(255);
-  ellipse(positionX, positionY, 20, 20);
-  positionX= positionX + 0.7f;
-  
-  // collision detection erstes rect
-  fill(153,255,255);
-  if (positionX > left && positionX < right) {
-    if(positionY > top && positionY < bottom){
-      fill(0,200,0);
-    }
-  }
-  // c-ton
-  rect(xPositionC, yPositionC , rectW, rectH);
-  rect(xPositionC + rectW, yPositionC , rectW, rectH);
-  rect(xPositionC + rectW * 2, yPositionC , rectW, rectH);
-  text("C", xPositionC, yPositionC + 50);
-  
+  ball.drawBall(positionX, positionY);
+  positionX = positionX+1.5;
+  cDur.drawScale();
   boundaries();
 }
 //Grenzen für Ballbewegung 
