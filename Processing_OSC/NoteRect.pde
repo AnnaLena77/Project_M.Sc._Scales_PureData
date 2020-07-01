@@ -25,6 +25,7 @@ class NoteRect{
   
   void drawRect(){
     fill(153,255,255);
+    noStroke();
     this.filling();
     if(this.fill){
       fill(0,200,0);

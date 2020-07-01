@@ -9,6 +9,7 @@ float positionY = 360;
 
 Scale cDur;
 Ball ball;
+Button cDurButton;
 
 void setup(){
   size(1080,720);
@@ -16,6 +17,7 @@ void setup(){
   myRemoteLocation = new NetAddress("192.168.178.36", 9002);
   cDur = new Scale('C', 20, 20);
   ball = new Ball(this.positionX, this.positionY);
+  cDurButton = new Button(50, 50, 70, 50, "C-Dur", 0, 200, 200);
   //OscMessage myMessage = new OscMessage("/test");
   //myMessage.add("");
   //oscP5.send(myMessage, myRemoteLocation);
@@ -34,7 +36,15 @@ void draw(){
   ball.drawBall(positionX, positionY);
   positionX = positionX+1.5;
   cDur.drawScale();
+  if(cDurButton.isClicked())
+  {
+    //spiele Musik
+    // starte ball
+  }
+  cDurButton.update();
+  cDurButton.render();
   boundaries();
+  
 }
 //Grenzen für Ballbewegung 
 void boundaries(){
