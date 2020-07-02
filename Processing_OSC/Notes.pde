@@ -1,3 +1,5 @@
+//Klasse zum erstellen von 3 Rechtecken nebenbeinander, die eine Note bilden
+
 class Notes{
   float rectH;
   float rectW;
@@ -6,9 +8,10 @@ class Notes{
   NoteRect first;
   NoteRect second;
   NoteRect third;
-  char note;
+  String note;
+  int pointer;
   
-  Notes(float xPosition, float yPosition, float rectW, float rectH, char note){
+  Notes(float xPosition, float yPosition, float rectW, float rectH, String note){
     this.note = note;
     this.rectH = rectH;
     this.rectW = rectW;
@@ -24,10 +27,23 @@ class Notes{
     second.drawRect();
     third.drawRect();
     text(note, this.xPosition+rectW, this.yPosition + rectH+10);
+    this.pointer=first.pointer+second.pointer+third.pointer;
   }
+  
+  //Cleaner, um Pointer und Färbung zurückzusetzen
   public void cleanNoteRects(){
+    first.pointer=0;
+    second.pointer=0;
+    third.pointer=0;
     first.fill=false;
     second.fill=false;
     third.fill=false;
+  }
+  
+  //Schwierigkeitstufe verändern
+  public void changeDifficulty(int dif){
+    first.rectH=dif;
+    second.rectH=dif;
+    third.rectH=dif;
   }
 }

@@ -1,26 +1,31 @@
-#N canvas 45 106 450 557 12;
+#N canvas 45 106 524 557 12;
 #X declare -path mrpeach;
 #X msg 76 209 connect localhost 9001;
 #X msg 174 237 disconnect;
 #X obj 17 18 declare -path mrpeach;
 #X obj 66 390 udpsend;
 #X obj 162 366 packOSC;
-#X msg 163 333 send /test \$1;
 #N canvas 643 85 450 300 sing 0;
 #X obj 188 58 adc~;
 #X obj 190 114 fiddle~;
 #X obj 186 24 inlet;
 #X obj 188 163 outlet;
+#X text 229 65 Dieses Patch reagiert auf Töne aus dem Mikrofon und
+gibt die Midi-Werte zurück;
 #X connect 0 0 1 0;
 #X connect 1 0 3 0;
 #X connect 2 0 0 0;
 #X restore 165 302 pd sing;
-#X floatatom 166 276 5 0 0 0 - - -;
 #X obj 74 175 receive connect;
+#X text 35 88 Patch zum Senden der aufgezeichneten Töne an Processing
+;
+#X text 242 208 Übertragung über Port 9001;
+#X msg 163 333 send /sing \$1;
+#X text 272 311 es wird ein Wert \, der aus dem Patch "sing" kommt
+\, gemeinsam mit der Route "/sing" gesendet;
 #X connect 0 0 3 0;
 #X connect 1 0 3 0;
 #X connect 4 0 3 0;
-#X connect 5 0 4 0;
-#X connect 6 0 5 0;
-#X connect 7 0 6 0;
-#X connect 8 0 0 0;
+#X connect 5 0 9 0;
+#X connect 6 0 0 0;
+#X connect 9 0 4 0;

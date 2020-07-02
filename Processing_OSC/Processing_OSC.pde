@@ -4,54 +4,87 @@ import netP5.*;
 OscP5 oscP5;
 NetAddress myRemoteLocation;
 
+//Schwierigkeitsgrad (Standard: 20 = Medium)
+int difficulty=20;
+//Anzeige der erreichten Punkte des Nutzers
+int result;
+
+/*Position des Balls, Hilfsvariable "ballPositionY", um die Werte der empfangenen Töne
+  so anzupassen, dass alle Tonleitern im gleichen Bereich des Bildschirms gesungen werden
+  können*/
 float positionX = 20;
 float positionY = 360;
+float ballPositionY=0;
 
-Scale cDur;
+//Tonleitern
+Scale cDur, dDur, eDur, fDur, gDur, aDur, hDur, cDur2, pressedButton;
+
+//Ball, der die gesungene Tonhöhe anzeigt
 Ball ball;
-Button cDurButton;
-Button dDurButton;
-Button eDurButton;
-Button fDurButton;
-Button gDurButton;
-Button aDurButton;
-Button hDurButton;
-Button cDurButton2;
+
+//Initialisierung der Buttons
+Button cDurButton, dDurButton, eDurButton, fDurButton, gDurButton, aDurButton, hDurButton, cDurButton2;
 Difficulties diffBut;
+
+//Booleans, zum ermitteln der aktuellen "Phase" (Listening, Singing)
 boolean startBall= false;
+boolean listeningPhase=false;
 
 void setup(){
   size(1080,720);
+  
+  //oscP5 = "Listener" auf Port 9001, wartet auf eingehende Messages
   oscP5 = new OscP5(this, 9001);
+  //RemoteLocation = "Sender" auf Port 9002
   myRemoteLocation = new NetAddress("192.168.178.36", 9002);
-  cDur = new Scale('C', 20, 20);
+
   ball = new Ball(this.positionX, this.positionY);
   
-  //scale buttons
-  cDurButton = new Button(75, 50, 80, 50, "C-Dur", 0, 0, 200, 255);
+  cDur = new Scale("C", difficulty, 20);
+  dDur = new Scale("D", difficulty, 20);
+  eDur = new Scale("E", difficulty, 20);
+  fDur = new Scale("F", difficulty, 20);
+  gDur = new Scale("G", difficulty, 20);
+  aDur = new Scale("A", difficulty, 20);
+  hDur = new Scale("H", difficulty, 20);
+  cDur2 = new Scale("C", difficulty, 20);
+  
+  //Buttons (Tonleitern) im oberen Bereich des Bildschirms
+  cDurButton = new Button(75, 50, 80, 50, "C-Dur(2)", 0, 0, 200, 255);
   dDurButton = new Button(195, 50, 80, 50, "D-Dur", 0, 0, 200, 255);  
   eDurButton = new Button(315, 50, 80, 50, "E-Dur", 0, 0, 200, 255);  
   fDurButton = new Button(435, 50, 80, 50, "F-Dur", 0, 0, 200, 255);
   gDurButton = new Button(555, 50, 80, 50, "G-Dur", 0, 0, 200, 255);
   aDurButton = new Button(675, 50, 80, 50, "A-Dur", 0, 0, 200, 255);
   hDurButton = new Button(795, 50, 80, 50, "H-Dur", 0, 0, 200, 255);
-  cDurButton2 = new Button(915, 50, 80, 50, "C-Dur(2)", 0, 0, 200, 255);
+  cDurButton2 = new Button(915, 50, 80, 50, "C-Dur(3)", 0, 0, 200, 255);
   
+  //Reihe von Buttons zur Auswahl der Schwierigkeitsgrade
   diffBut = new Difficulties(600, 50, 70, 50, "difficulty", 0, 200, 200);
-  //OscMessage myMessage = new OscMessage("/test");
-  //myMessage.add("");
-  //oscP5.send(myMessage, myRemoteLocation);
 }
 
+//Methode wird dann aufgerufen, wenn eine Message empfangen wurde
+/*
+  Bildschirm wurde auf die Werte des 2. C-Dur angepasst. Alle anderen Werte der Tonleitern müssen
+  deshalb diesen Werten angepasst werden, sodass sich der Ball auf passender Höhe mit den statisch 
+  gesetzten Rechtecken befindet.
+  Daher wird die für jede Tonleiter individuell berechnete ballPositionY, jeweils auf den D-Dur-
+  Wert aufaddiert.
+*/
 void oscEvent(OscMessage osgMsg){
   try{
-    float value = osgMsg.get(0).floatValue();
+    //Empfängt das mitgesendete Value der Message
+    float value = osgMsg.get(0).floatValue()+ballPositionY;
     float singingfield = 720.0/3.0 + 720.0/3.0;
-    positionY = ((singingfield/12 * (value-72))*-1)+(20*(value-60));
+    positionY = ((singingfield/12 * (value-72))*-1)+(20*(value-60)); //Berechnung des mittleren Teils des Bildschirms anhand der 2. C-Dur-Werte
+    
+  //Wird in der eingehenden Message kein Value-Wert mitgeschickt, kommt es zu einer Exception
   }catch (Exception e){
+    //String mit dem Pfad, der versendet wurde
     String msg = osgMsg.toString();
-    System.out.println(msg);
+    //Wenn "/end"-Pfad empfangen wird, ist Tonleiter fertig gespielt, die Listening-Phase ist zu ende und die Singing-Phase startet
     if(msg.contains("/end")){
+      listeningPhase=false;
       startBall=true;
     }
   }
@@ -59,69 +92,39 @@ void oscEvent(OscMessage osgMsg){
 
 void draw(){
   background(0);
-  //cDur.drawScale();
+ 
+  //cDur(1)
   if(cDurButton.isClicked())
   {
-    OscMessage myMessage = new OscMessage("/cDur");
-    myMessage.add("");
-    oscP5.send(myMessage, myRemoteLocation);
-    positionX = 0;
-    cDur.cleanScale();
-  }
-  if(startBall){
-    fill(255);
-    ball.drawBall(positionX, positionY);
-    positionX = positionX+1.5;
-    cDur.drawScale();
-  }
-  if(ball.positionX==width){
-    startBall = false;
-    ball.positionX=0;
+    listeningPhase=true;
+    sendMessage("cDur");
+    cleaner(cDur);
+    pressedButton = cDur;
+    ballPosition(48);
   }
   cDurButton.update();
   cDurButton.render();
   
   //D-Dur
-  //cDur.drawScale();
   if(dDurButton.isClicked())
   {
-    OscMessage myMessage = new OscMessage("/cDur");
-    myMessage.add("");
-    oscP5.send(myMessage, myRemoteLocation);
-    positionX = 0;
-    //dDur.cleanScale();
-  }
-  if(startBall){
-    fill(255);
-    ball.drawBall(positionX, positionY);
-    positionX = positionX+1.5;
-    //dDur.drawScale();
-  }
-  if(ball.positionX==width){
-    startBall = false;
-    ball.positionX=0;
+    listeningPhase=true;
+    sendMessage("dDur");
+    cleaner(dDur);
+    pressedButton = dDur;
+    ballPosition(50);
   }
   dDurButton.update();
   dDurButton.render();
   
-  //E-Dur
-  if(eDurButton.isClicked())
+ //E-Dur
+ if(eDurButton.isClicked())
   {
-    OscMessage myMessage = new OscMessage("/cDur");
-    myMessage.add("");
-    oscP5.send(myMessage, myRemoteLocation);
-    positionX = 0;
-    //eDur.cleanScale();
-  }
-  if(startBall){
-    fill(255);
-    ball.drawBall(positionX, positionY);
-    positionX = positionX+1.5;
-    //eDur.drawScale();
-  }
-  if(ball.positionX==width){
-    startBall = false;
-    ball.positionX=0;
+    listeningPhase=true;
+    sendMessage("eDur");
+    cleaner(eDur);
+    pressedButton = eDur;
+    ballPosition(52);
   }
   eDurButton.update();
   eDurButton.render();
@@ -129,21 +132,11 @@ void draw(){
   //F-Dur
   if(fDurButton.isClicked())
   {
-    OscMessage myMessage = new OscMessage("/cDur");
-    myMessage.add("");
-    oscP5.send(myMessage, myRemoteLocation);
-    positionX = 0;
-    //fDur.cleanScale();
-  }
-  if(startBall){
-    fill(255);
-    ball.drawBall(positionX, positionY);
-    positionX = positionX+1.5;
-    //fDur.drawScale();
-  }
-  if(ball.positionX==width){
-    startBall = false;
-    ball.positionX=0;
+    listeningPhase=true;
+    sendMessage("fDur");
+    cleaner(fDur);
+    pressedButton = fDur;
+    ballPosition(53);
   }
   fDurButton.update();
   fDurButton.render();
@@ -151,21 +144,11 @@ void draw(){
   //G-Dur
   if(gDurButton.isClicked())
   {
-    OscMessage myMessage = new OscMessage("/cDur");
-    myMessage.add("");
-    oscP5.send(myMessage, myRemoteLocation);
-    positionX = 0;
-    //gDur.cleanScale();
-  }
-  if(startBall){
-    fill(255);
-    ball.drawBall(positionX, positionY);
-    positionX = positionX+1.5;
-    //gDur.drawScale();
-  }
-  if(ball.positionX==width){
-    startBall = false;
-    ball.positionX=0;
+    listeningPhase=true;
+    sendMessage("gDur");
+    cleaner(gDur);
+    pressedButton = gDur;
+    ballPosition(55);
   }
   gDurButton.update();
   gDurButton.render();
@@ -173,21 +156,11 @@ void draw(){
   //A-Dur
   if(aDurButton.isClicked())
   {
-    OscMessage myMessage = new OscMessage("/cDur");
-    myMessage.add("");
-    oscP5.send(myMessage, myRemoteLocation);
-    positionX = 0;
-    //aDur.cleanScale();
-  }
-  if(startBall){
-    fill(255);
-    ball.drawBall(positionX, positionY);
-    positionX = positionX+1.5;
-    //aDur.drawScale();
-  }
-  if(ball.positionX==width){
-    startBall = false;
-    ball.positionX=0;
+    listeningPhase=true;
+    sendMessage("aDur");
+    cleaner(aDur);
+    pressedButton = aDur;
+    ballPosition(57);
   }
   aDurButton.update();
   aDurButton.render();  
@@ -195,21 +168,11 @@ void draw(){
   //H-Dur
   if(hDurButton.isClicked())
   {
-    OscMessage myMessage = new OscMessage("/cDur");
-    myMessage.add("");
-    oscP5.send(myMessage, myRemoteLocation);
-    positionX = 0;
-    //hDur.cleanScale();
-  }
-  if(startBall){
-    fill(255);
-    ball.drawBall(positionX, positionY);
-    positionX = positionX+1.5;
-    //hDur.drawScale();
-  }
-  if(ball.positionX==width){
-    startBall = false;
-    ball.positionX=0;
+    listeningPhase=true;
+    sendMessage("hDur");
+    cleaner(hDur);
+    pressedButton = hDur;
+    ballPosition(59);
   }
   hDurButton.update();
   hDurButton.render();
@@ -217,24 +180,61 @@ void draw(){
   //C-Dur(2)
   if(cDurButton2.isClicked())
   {
-    OscMessage myMessage = new OscMessage("/cDur");
-    myMessage.add("");
-    oscP5.send(myMessage, myRemoteLocation);
-    positionX = 0;
-    //cDur2.cleanScale();
-  }
-  if(startBall){
-    fill(255);
-    ball.drawBall(positionX, positionY);
-    positionX = positionX+1.5;
-    //cDur2.drawScale();
-  }
-  if(ball.positionX==width){
-    startBall = false;
-    ball.positionX=0;
+    listeningPhase=true;
+    sendMessage("cDur2");
+    cleaner(cDur2);
+    pressedButton = cDur2;
+    ballPosition(60);
   }
   cDurButton2.update();
-  cDurButton2.render();  
+  cDurButton2.render();
+  
+  if(listeningPhase){
+    //-----------------------------------------------------------------------------------------------
+    //Das ist die "Zuhör-Phase", während die entsprechende Tonleiter abgespielt wird.
+    //Es soll dem Nutzer ein Text wie z.B. "Listen!" angezeigt werden
+    //------------------------------------------------------------------------------------------------
+  }
+  
+  //Start der Singing-Phase
+  if(startBall){
+    pressedButton.changeDifficulty(difficulty);
+    fill(255);
+    ball.drawBall(positionX, positionY);
+    positionX = positionX+1.6;
+    pressedButton.drawScale();
+  }
+  
+  //Wenn der Ball am rechten Bildschirm-Rand angekommen ist, ist die Singing-Phase abgeschlossen, der Nutzer bekommt seine erreichten Punkte angezeigt
+  if(ball.positionX==width){
+    result = points(pressedButton);
+    //-----------------------------------------------------------
+    //Hier bitte Result anzeigen mit globaler Variable "result"!
+    //Zusätzlich Button zum Bestätigen
+    //------------------------------------------------------------
+    ball.positionX=20;
+    ball.positionY=360;
+  }  
+  
+  //------------------------------------------------------------------------------
+  //Hier neuer Button mit Methode "Button is clicked", 
+  //wenn das Result vom Nutzer bestätigt wurde mit folgendem Inhalt:
+  //if(Button.isClicked){
+  //    startBall = false;
+  //    pressedButton.cleaner();
+  //}
+  //-------------------------------------------------------------------------------
+  
+  //Buttons für Änderung der Schwierigkeit
+  if(diffBut.easy.isClicked()){
+    this.difficulty= 30;
+  }
+  if(diffBut.medium.isClicked()){
+    this.difficulty=20;
+  }
+  if(diffBut.hard.isClicked()){
+    this.difficulty=10;
+  }
   
   diffBut.drawDifficulties();
   boundaries();
@@ -242,11 +242,6 @@ void draw(){
 }
 //Grenzen für Ballbewegung 
 void boundaries(){
-  /*
-  if(positionX < 0) { // off left of window
-    positionX = 0;
-  }
-  */
     if(positionX > width) { // off right of window
     positionX = width;
   }
@@ -256,4 +251,28 @@ void boundaries(){
     if(positionY > height) { // off bottom of window
     positionY = height;
   }
+}
+
+//Senden einer Message an PureData
+//Es wird als "key" die entsprechende Tonart übergeben und diese als Pfad an PureData gesendet
+void sendMessage(String key){
+  OscMessage myMessage = new OscMessage("/" + key);
+  myMessage.add("");
+  oscP5.send(myMessage, myRemoteLocation);
+}
+
+//Wenn ein Durchgang abgeschlossen ist, muss der Ball an den Anfang gesetzt und die Rechtecke wieder entfärbt werden
+void cleaner(Scale sc){
+  positionX = 0;
+  sc.cleanScale();
+}
+
+//Methode um die ballPositionY zu berechnen, die für die Anpassung der Ballhöhe bei den verschiedenen Tonarten zuständig ist
+void ballPosition(float x){
+  this.ballPositionY = 60-x;
+}  
+
+//Erreichte Punkte in der jeweiligen Tonart ausgeben
+int points(Scale sc){
+  return sc.showPoints();
 }

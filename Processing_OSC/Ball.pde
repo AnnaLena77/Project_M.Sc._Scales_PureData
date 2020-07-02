@@ -2,6 +2,8 @@ class Ball{
   float positionX;
   float positionY;
   float width = 20; 
+  
+  //Konstruktor Ball
   Ball(float x, float y){
     this.positionX = x;
     this.positionY = y;

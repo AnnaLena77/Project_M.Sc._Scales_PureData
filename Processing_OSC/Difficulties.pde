@@ -9,6 +9,9 @@ class Difficulties
   Button medium;
   Button hard;
   
+  int actuallyDifficulty;
+  
+  //Konstruktor
   Difficulties(int x, int y, int w, int h, String t, int r, int g, int b)
   {
     Pos.x = x;
@@ -22,8 +25,11 @@ class Difficulties
     hard = new Button(width / 2 + 35, 630, 70, 50, "hard", 255, 0, 0, 255);
   }
   public void drawDifficulties(){
+    easy.update();
     easy.render();
+    medium.update();
     medium.render();
+    hard.update();
     hard.render();
     textSize(15);
     text("Difficulty:", width / 2 - 200, 655);
