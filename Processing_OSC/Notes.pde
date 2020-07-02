@@ -25,4 +25,9 @@ class Notes{
     third.drawRect();
     text(note, this.xPosition+rectW, this.yPosition + rectH+10);
   }
+  public void cleanNoteRects(){
+    first.fill=false;
+    second.fill=false;
+    third.fill=false;
+  }
 }

@@ -10,6 +10,7 @@ float positionY = 360;
 Scale cDur;
 Ball ball;
 Button cDurButton;
+boolean startBall= false;
 
 void setup(){
   size(1080,720);
@@ -24,22 +25,39 @@ void setup(){
 }
 
 void oscEvent(OscMessage osgMsg){
-  //println(osgMsg.get(0).floatValue());
-  float value = osgMsg.get(0).floatValue();
-  float singingfield = 720.0/3.0 + 720.0/3.0;
-  positionY = ((singingfield/12 * (value-72))*-1)+(20*(value-60));
+  try{
+    float value = osgMsg.get(0).floatValue();
+    float singingfield = 720.0/3.0 + 720.0/3.0;
+    positionY = ((singingfield/12 * (value-72))*-1)+(20*(value-60));
+  }catch (Exception e){
+    String msg = osgMsg.toString();
+    System.out.println(msg);
+    if(msg.contains("/end")){
+      startBall=true;
+    }
+  }
 }
 
 void draw(){
   background(0);
-  fill(255);
-  ball.drawBall(positionX, positionY);
-  positionX = positionX+1.5;
-  cDur.drawScale();
+  //cDur.drawScale();
   if(cDurButton.isClicked())
   {
-    //spiele Musik
-    // starte ball
+    OscMessage myMessage = new OscMessage("/cDur");
+    myMessage.add("");
+    oscP5.send(myMessage, myRemoteLocation);
+    positionX = 0;
+    cDur.cleanScale();
+  }
+  if(startBall){
+    fill(255);
+    ball.drawBall(positionX, positionY);
+    positionX = positionX+1.5;
+    cDur.drawScale();
+  }
+  if(ball.positionX==width){
+    startBall = false;
+    ball.positionX=0;
   }
   cDurButton.update();
   cDurButton.render();

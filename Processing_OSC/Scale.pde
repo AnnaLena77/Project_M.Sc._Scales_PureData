@@ -43,4 +43,14 @@ class Scale {
     seven.drawNote();
     eight.drawNote();
   }
+  public void cleanScale(){
+    one.cleanNoteRects();
+    two.cleanNoteRects();
+    three.cleanNoteRects();
+    four.cleanNoteRects();
+    five.cleanNoteRects();
+    six.cleanNoteRects();
+    seven.cleanNoteRects();
+    eight.cleanNoteRects();
+  }
 }
