@@ -6,18 +6,20 @@ class Button
   float butWidth =  0;
   float butHeight = 0;
   color butColor;
+  color textColor;
   String butText;
   Boolean pressed = false;
   Boolean clicked = false;
   
   //Konstruktoren um Button zu erzeugen 
-  Button(int x, int y, int w, int h, String t, int r, int g, int b)
+  Button(int x, int y, int w, int h, String t, int r, int g, int b, int c)
   {
     Pos.x = x;
     Pos.y = y;
     butWidth = w;
     butHeight = h;
     butColor = color(r, g, b);
+    textColor = color(c);
     butText = t;
   }
   //Button Klick in void draw benutzen
@@ -43,9 +45,11 @@ class Button
   void render() 
   {
     fill(butColor);
+    noStroke();
     rect(Pos.x, Pos.y, butWidth, butHeight);
     fill(0);
     textAlign(CENTER, CENTER);
+    fill(textColor);
     text(butText, Pos.x + (butWidth/2), Pos.y + (butHeight / 2));
   }
   // in if statements benutzen um zu checken ob der button gedrückt wurde
