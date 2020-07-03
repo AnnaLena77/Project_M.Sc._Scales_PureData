@@ -23,7 +23,7 @@ Scale cDur, dDur, eDur, fDur, gDur, aDur, hDur, cDur2, pressedButton;
 Ball ball;
 
 //Initialisierung der Buttons
-Button cDurButton, dDurButton, eDurButton, fDurButton, gDurButton, aDurButton, hDurButton, cDurButton2;
+Button cDurButton, dDurButton, eDurButton, fDurButton, gDurButton, aDurButton, hDurButton, cDurButton2, okButton;
 Difficulties diffBut;
 
 //Booleans, zum ermitteln der aktuellen "Phase" (Listening, Singing)
@@ -62,6 +62,9 @@ void setup(){
   
   //Reihe von Buttons zur Auswahl der Schwierigkeitsgrade
   diffBut = new Difficulties(600, 50, 70, 50, "difficulty", 0, 200, 200);
+  
+  //Button zum Bestätigen des Results
+  okButton = new Button(width/2 - 40, height/2, 80, 50, "OK", 200, 200, 200, 0);
 }
 
 //Methode wird dann aufgerufen, wenn eine Message empfangen wurde
@@ -216,22 +219,23 @@ void draw(){
   //Wenn der Ball am rechten Bildschirm-Rand angekommen ist, ist die Singing-Phase abgeschlossen, der Nutzer bekommt seine erreichten Punkte angezeigt
   if(ball.positionX==width){
     result = points(pressedButton);
-    //-----------------------------------------------------------
-    //Hier bitte Result anzeigen mit globaler Variable "result"!
-    //Zusätzlich Button zum Bestätigen
-    //------------------------------------------------------------
+    fill(100, 100, 100, 210);
+    noStroke();
+    rect(0, 0, width, height);
+    fill(255);
+    textAlign(CENTER, CENTER);
+    text("Your result is " + result + " of 24", width/2, height/2 - 70);
+    okButton.update();
+    okButton.render();
     ball.positionX=20;
     ball.positionY=360;
   }  
-  
-  //------------------------------------------------------------------------------
-  //Hier neuer Button mit Methode "Button is clicked", 
-  //wenn das Result vom Nutzer bestätigt wurde mit folgendem Inhalt:
-  //if(Button.isClicked){
-  //    startBall = false;
-  //    pressedButton.cleaner();
-  //}
-  //-------------------------------------------------------------------------------
+
+  //das Result wird mit einem Button vom Nutzer bestätigt 
+  if(okButton.isClicked()){
+      startBall = false;
+      cleaner(pressedButton);
+  }
   
   //Buttons für Änderung der Schwierigkeit
   if(diffBut.easy.isClicked()){
@@ -247,8 +251,8 @@ void draw(){
 }
 //Grenzen für Ballbewegung 
 void boundaries(){
-    if(positionX > width - 20) { // off right of window
-    positionX = width - 20;
+    if(positionX > width) { // off right of window
+    positionX = width;
   }
     if(positionY < 110) { // off top of window
     positionY = 110;
