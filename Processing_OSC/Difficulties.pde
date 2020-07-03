@@ -32,6 +32,6 @@ class Difficulties
     hard.update();
     hard.render();
     textSize(15);
-    text("Difficulty:", width / 2 - 200, 655);
+    text("Difficulty:", width / 2 - 170, 655);
   }
 }

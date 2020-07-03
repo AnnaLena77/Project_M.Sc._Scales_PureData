@@ -11,7 +11,7 @@ class Button
   Boolean pressed = false;
   Boolean clicked = false;
   
-  //Konstruktoren um Button zu erzeugen 
+  //Konstruktor Button
   Button(int x, int y, int w, int h, String t, int r, int g, int b, int c)
   {
     Pos.x = x;
@@ -22,7 +22,7 @@ class Button
     textColor = color(c);
     butText = t;
   }
-  //Button Klick in void draw benutzen
+  
   void update()
   {
     if(mousePressed == true && mouseButton == LEFT && pressed==false) 
@@ -41,18 +41,27 @@ class Button
       pressed = false;
     }
   }
-  // in void draw() platzieren um den button zu rendern
+  
+  // Anzeige des Buttons
   void render() 
   {
     fill(butColor);
-    noStroke();
+    //Umrahmung, sobald man auf Button drückt
+    if(isClicked())
+    {
+      strokeWeight(2);
+      stroke(255);
+    } else {
+      noStroke();
+    }
     rect(Pos.x, Pos.y, butWidth, butHeight);
     fill(0);
     textAlign(CENTER, CENTER);
     fill(textColor);
     text(butText, Pos.x + (butWidth/2), Pos.y + (butHeight / 2));
   }
-  // in if statements benutzen um zu checken ob der button gedrückt wurde
+  
+  // Checken, ob der Button gedrückt wurde
   boolean isClicked()
   {
     return clicked;

@@ -8,6 +8,8 @@ NetAddress myRemoteLocation;
 int difficulty=20;
 //Anzeige der erreichten Punkte des Nutzers
 int result;
+//Anzeigen des aktuellen Schwierigkeitsgrads
+String diffIndex = "medium";
 
 /*Position des Balls, Hilfsvariable "ballPositionY", um die Werte der empfangenen Töne
   so anzupassen, dass alle Tonleitern im gleichen Bereich des Bildschirms gesungen werden
@@ -37,7 +39,8 @@ void setup(){
   oscP5 = new OscP5(this, 9001);
   //RemoteLocation = "Sender" auf Port 9002
   // unter Windows IP: 127.0.0.1 nutzen
-  myRemoteLocation = new NetAddress("127.0.0.1", 9002);
+  // unter MacOS IP: 192.168.178.36
+  myRemoteLocation = new NetAddress("192.168.178.36", 9002);
 
   ball = new Ball(this.positionX, this.positionY);
   
@@ -193,8 +196,8 @@ void draw(){
   cDurButton2.update();
   cDurButton2.render();
   
-    
   diffBut.drawDifficulties();
+  showCurrentDifficulty();
   boundaries();
   
   //Das ist die "Zuhör-Phase", während die entsprechende Tonleiter abgespielt wird.
@@ -224,7 +227,7 @@ void draw(){
     rect(0, 0, width, height);
     fill(255);
     textAlign(CENTER, CENTER);
-    text("Your result is " + result + " of 24", width/2, height/2 - 70);
+    text("Your result is " + result + " out of 24", width/2, height/2 - 70);
     okButton.update();
     okButton.render();
     ball.positionX=20;
@@ -240,12 +243,15 @@ void draw(){
   //Buttons für Änderung der Schwierigkeit
   if(diffBut.easy.isClicked()){
     this.difficulty= 30;
+    diffIndex = "easy";
   }
   if(diffBut.medium.isClicked()){
     this.difficulty=20;
+    diffIndex = "medium";
   }
   if(diffBut.hard.isClicked()){
     this.difficulty=10;
+    diffIndex = "hard";
   }
   
 }
@@ -284,4 +290,9 @@ void ballPosition(float x){
 //Erreichte Punkte in der jeweiligen Tonart ausgeben
 int points(Scale sc){
   return sc.showPoints();
+}
+
+void showCurrentDifficulty(){
+  fill(255);
+  text("Currently: " + diffIndex, width / 2 + 220, 655);
 }
