@@ -36,7 +36,8 @@ void setup(){
   //oscP5 = "Listener" auf Port 9001, wartet auf eingehende Messages
   oscP5 = new OscP5(this, 9001);
   //RemoteLocation = "Sender" auf Port 9002
-  myRemoteLocation = new NetAddress("192.168.178.36", 9002);
+  // unter Windows IP: 127.0.0.1 nutzen
+  myRemoteLocation = new NetAddress("127.0.0.1", 9002);
 
   ball = new Ball(this.positionX, this.positionY);
   
@@ -189,11 +190,18 @@ void draw(){
   cDurButton2.update();
   cDurButton2.render();
   
+    
+  diffBut.drawDifficulties();
+  boundaries();
+  
+  //Das ist die "Zuhör-Phase", während die entsprechende Tonleiter abgespielt wird.
   if(listeningPhase){
-    //-----------------------------------------------------------------------------------------------
-    //Das ist die "Zuhör-Phase", während die entsprechende Tonleiter abgespielt wird.
-    //Es soll dem Nutzer ein Text wie z.B. "Listen!" angezeigt werden
-    //------------------------------------------------------------------------------------------------
+    fill(100, 100, 100, 210);
+    noStroke();
+    rect(0, 0, width, height);
+    fill(255);
+    textAlign(CENTER, CENTER);
+    text("Listen!", width/2, height/2);
   }
   
   //Start der Singing-Phase
@@ -236,20 +244,17 @@ void draw(){
     this.difficulty=10;
   }
   
-  diffBut.drawDifficulties();
-  boundaries();
-  
 }
 //Grenzen für Ballbewegung 
 void boundaries(){
-    if(positionX > width) { // off right of window
-    positionX = width;
+    if(positionX > width - 20) { // off right of window
+    positionX = width - 20;
   }
-    if(positionY < 0) { // off top of window
-    positionY = 0;
+    if(positionY < 110) { // off top of window
+    positionY = 110;
   }
-    if(positionY > height) { // off bottom of window
-    positionY = height;
+    if(positionY > 620) { // off bottom of window
+    positionY = 620;
   }
 }
 
