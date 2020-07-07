@@ -30,7 +30,7 @@ Difficulties diffBut;
 
 //Booleans, zum ermitteln der aktuellen "Phase" (Listening, Singing)
 boolean startBall= false;
-boolean listeningPhase=false;
+boolean listeningPhase = false;
 
 void setup(){
   size(1080,720);
@@ -82,6 +82,7 @@ void oscEvent(OscMessage osgMsg){
   try{
     //Empfängt das mitgesendete Value der Message
     float value = osgMsg.get(0).floatValue()+ballPositionY;
+    println(value);
     float singingfield = 720.0/3.0 + 720.0/3.0;
     positionY = ((singingfield/12 * (value-72))*-1)+(20*(value-60)); //Berechnung des mittleren Teils des Bildschirms anhand der 2. C-Dur-Werte
     
@@ -91,8 +92,8 @@ void oscEvent(OscMessage osgMsg){
     String msg = osgMsg.toString();
     //Wenn "/end"-Pfad empfangen wird, ist Tonleiter fertig gespielt, die Listening-Phase ist zu ende und die Singing-Phase startet
     if(msg.contains("/end")){
-      listeningPhase=false;
-      startBall=true;
+      listeningPhase = false;
+      startBall = true;
     }
   }
 }
@@ -232,13 +233,13 @@ void draw(){
     okButton.render();
     ball.positionX=20;
     ball.positionY=360;
-  }  
-
-  //das Result wird mit einem Button vom Nutzer bestätigt 
-  if(okButton.isClicked()){
+    //das Result wird mit einem Button vom Nutzer bestätigt 
+    if(okButton.isClicked()){
       startBall = false;
+      println("startball ist false");
       cleaner(pressedButton);
-  }
+    }
+  }  
   
   //Buttons für Änderung der Schwierigkeit
   if(diffBut.easy.isClicked()){

@@ -12,7 +12,7 @@
 #X msg 126 166 send /end;
 #X obj 853 355 send connect;
 #X obj 20 50 receive connect;
-#N canvas 258 51 1159 719 tonleiter 1;
+#N canvas 229 23 1159 719 tonleiter 1;
 #X obj 536 525 osc~;
 #X obj 539 554 *~ 0.7;
 #X obj 544 585 *~;
@@ -159,6 +159,7 @@ eine Liste mit den Midi-Daten aller enthaltenen Töne bereitgestellt
 Die jeweilige Liste wird entpackt und die Töne werden dann einzeln
 an das Patch "tonleiter gesendet". Außerdem wird das Patch "tonleiter"
 aufgerufen \, damit eine Tonleiter abgespielt werden kann;
+#X obj 204 196 print end;
 #X connect 1 0 2 0;
 #X connect 1 0 15 0;
 #X connect 1 0 16 0;
@@ -174,6 +175,7 @@ aufgerufen \, damit eine Tonleiter abgespielt werden kann;
 #X connect 6 0 9 0;
 #X connect 8 0 4 0;
 #X connect 9 0 5 0;
+#X connect 9 0 45 0;
 #X connect 11 0 8 0;
 #X connect 12 0 7 0;
 #X connect 13 0 14 0;
